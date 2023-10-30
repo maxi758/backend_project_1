@@ -38,7 +38,17 @@ const createCategory = async (req, res, next) => {
 	res.status(201).json({result});
 }
 
+const updateCategory = async (req, res, next) => {
+	const {pid} = req.params;
+	const propertiesToUpdate = req.body
+	console.log(propertiesToUpdate);
+	const updatedCategory = await Category.findByIdAndUpdate(pid, propertiesToUpdate, {new: true});
+	//const updatedCategory = await Category.findOneAndUpdate({_id: pid}, propertiesToUpdate, {new: true});
+	res.json({updatedCategory});
+}
+
 module.exports = {
 	getCategories,
-	createCategory
+	createCategory,
+	updateCategory
 }
