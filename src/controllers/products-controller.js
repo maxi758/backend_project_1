@@ -1,6 +1,5 @@
-const { async } = require("rxjs");
 const HttpError = require("../models/http-error");
-const product = require("../models/product");
+
 const Product = require("../models/product");
 
 const getProducts = async (req, res, next) => {
