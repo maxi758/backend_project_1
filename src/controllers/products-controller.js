@@ -1,3 +1,4 @@
+const { async } = require("rxjs");
 const HttpError = require("../models/http-error");
 const product = require("../models/product");
 const Product = require("../models/product");
@@ -42,12 +43,12 @@ const getProductsByCategory = async (req, res, next) => {
   let products;
   const { cid } = req.params;
   try {
-    products = Product.find({ category: cid });
+    products = await Product.find({ category: cid });
   } catch (err) {
     const error = new HttpError("Fetch failed", 500);
     return next(error);
   }
-  if (!products) {
+  if (products.length === 0) {
     const error = new HttpError(
       "Could not find products for that category",
       404
@@ -61,8 +62,31 @@ const getProductsByCategory = async (req, res, next) => {
     });
 };
 
+const createProduct = async (req, res, next) => {
+  const {name, description, price, stock, image} = req.body;
+  let result;
+  const product = new Product({
+    name,
+    description,
+    price,
+    stock,
+    image
+  });
+  if (req.body.category){
+    product.category = req.body.category;
+  }
+  try {
+    result = product.save();
+  } catch (err) {
+    const error = new HttpError("Creation failed", 500);
+    return next(error);
+  }
+  res.status(201).json({product});
+}
+
 module.exports = {
   getProducts,
   getProductById,
-  getProductsByCategory
+  getProductsByCategory,
+  createProduct
 };
