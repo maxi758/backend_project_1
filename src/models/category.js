@@ -9,7 +9,7 @@ const categorySchema = new schema({
   updatedAt: { type: Date, default: Date.now },
   product: [{ type: mongoose.Types.ObjectId, required: true, ref: "Product" }],
 });
-
+// se ejecuta antes que el update para actualizar la fecha
 categorySchema.pre("findOneAndUpdate", function (next) {
   const update = this.getUpdate();
   let now = Date.now();
