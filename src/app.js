@@ -4,6 +4,7 @@ const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 const HttpError = require("./models/http-error");
 const categoriesRoutes = require("./routes/categories-routes");
+const productsRoutes = require('./routes/products-routes');
 
 dotenv.config();
 
@@ -12,6 +13,8 @@ const app = express();
 app.use(express.json());
 
 app.use("/api/categories", categoriesRoutes);
+
+app.use('/api/products', productsRoutes);
 
 app.use((req, res, next) => {
   const error = new HttpError("Could not find this route", 404);

@@ -7,10 +7,10 @@ const productSchema = new schema({
   description: { type: String, required: true },
   price: {type: Number, required: true},
   stock: {type: Number, required: true},
-  image: { type: URL, required: true},
+  image: { type: String, required: true},
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
   category: { type: mongoose.Types.ObjectId, required: false, ref: "Category" }
 });
 
-module.exports = mongoose.Model('Product', productSchema);
+module.exports = mongoose.model('Product', productSchema);

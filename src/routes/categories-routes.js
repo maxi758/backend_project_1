@@ -11,9 +11,9 @@ const {
 const router = express.Router();
 
 router.get("/", getCategories);
-router.get("/:pid", getCategoryById);
+router.get("/:cid", getCategoryById);
 router.post("/", createCategory);
-router.patch("/:pid", updateCategory);
-router.delete("/:pid", deleteCategory);
+router.patch("/:cid", updateCategory);
+router.delete("/:cid", deleteCategory);
 
 module.exports = router;
