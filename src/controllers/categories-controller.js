@@ -16,10 +16,27 @@ const getCategories = async (req, res, next) => {
     return next(error);
   }
   res.status(200).json({
-    categories /*: categories.map((category) =>
+    categories: categories.map((category) =>
       category.toObject({ getters: true })
-    ),*/,
+    ),
   });
+};
+
+const getCategoryById = async (req, res, next) => {
+  let category;
+  const { pid } = req.params;
+  try {
+    category = await Category.findById(pid).exec();
+  } catch (err) {
+    const error = new HttpError("Fetch failed", 500);
+    return next(error);
+  }
+  if (!category) {
+    const error = new HttpError("Category with given id was not found", 404);
+    return next(error);
+  }
+	console.log(category);
+  res.status(200).json({ category: category.toObject({ getters: true }) });
 };
 
 const createCategory = async (req, res, next) => {
@@ -35,7 +52,7 @@ const createCategory = async (req, res, next) => {
     const error = new HttpError("Creation failed", 500);
     return next(error);
   }
-  res.status(201).json({ result });
+  res.status(201).json({ category });
 };
 
 const updateCategory = async (req, res, next) => {
@@ -62,24 +79,25 @@ const updateCategory = async (req, res, next) => {
 };
 
 const deleteCategory = async (req, res, next) => {
-	const { pid } = req.params;
-	let deletedCategory;
-	try {
-		deletedCategory = await Category.findByIdAndDelete(pid);
-	} catch (err) {
-		const error = new HttpError("Update failed", 500);
+  const { pid } = req.params;
+  let deletedCategory;
+  try {
+    deletedCategory = await Category.findByIdAndDelete(pid);
+  } catch (err) {
+    const error = new HttpError("Update failed", 500);
     return next(error);
   }
   if (!deletedCategory) {
     const error = new HttpError("Category with given id was not found", 404);
     return next(error);
   }
-	res.status(200).json({deletedCategory});
+  res.status(200).json({ deletedCategory });
 };
 
 module.exports = {
   getCategories,
+	getCategoryById,
   createCategory,
   updateCategory,
-	deleteCategory
+  deleteCategory,
 };
