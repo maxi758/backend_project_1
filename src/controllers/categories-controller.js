@@ -84,7 +84,7 @@ const deleteCategory = async (req, res, next) => {
   try {
     deletedCategory = await Category.findByIdAndDelete(cid);
   } catch (err) {
-    const error = new HttpError("Update failed", 500);
+    const error = new HttpError("Delete failed", 500);
     return next(error);
   }
   if (!deletedCategory) {

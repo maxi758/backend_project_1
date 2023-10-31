@@ -24,7 +24,7 @@ const getProductById = async (req, res, next) => {
   let product;
   const { pid } = req.params;
   try {
-    product = await Product.findById(pid);
+    product = await Product.findById(pid).populate('category');
   } catch (err) {
     const error = new HttpError("Fetch failed", 500);
     return next(error);
@@ -84,9 +84,47 @@ const createProduct = async (req, res, next) => {
   res.status(201).json({product});
 }
 
+const updateProduct = async (req, res, next) => {
+  const {pid} = req.params;
+  const propertiesToUpdate = req.body;
+  let product;
+  try {
+    product = await Product.findByIdAndUpdate(pid, propertiesToUpdate, {new: true});
+  } catch (err) {
+    const error = new HttpError("Update failed", 500);
+    return next(error);
+  }
+  if (!product) {
+    const error = new HttpError(
+      "Could not find a product for the given id",
+      404
+    );
+    return next(error);
+  }
+  res.status(200).json({product});
+}
+
+const deleteProduct = async (req, res, next) => {
+  const { pid } = req.params;
+  let deletedProduct;
+  try {
+    deletedProduct = await Product.findByIdAndDelete(pid);
+  } catch (err) {
+    const error = new HttpError("Delete failed", 500);
+    return next(error);
+  }
+  if (!deletedProduct) {
+    const error = new HttpError("Product with given id was not found", 404);
+    return next(error);
+  }
+  res.status(200).json({ product: deletedProduct });
+};
+
 module.exports = {
   getProducts,
   getProductById,
   getProductsByCategory,
-  createProduct
+  createProduct,
+  updateProduct,
+  deleteProduct
 };

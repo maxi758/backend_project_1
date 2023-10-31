@@ -4,7 +4,9 @@ const {
   getProducts,
   getProductById,
   getProductsByCategory,
-  createProduct
+  createProduct,
+  updateProduct,
+  deleteProduct
 } = require("../controllers/products-controller");
 
 const route = express.Router();
@@ -16,5 +18,9 @@ route.get('/:pid', getProductById);
 route.get('/categories/:cid', getProductsByCategory);
 
 route.post('/', createProduct);
+
+route.patch('/:pid', updateProduct);
+
+route.delete('/:pid', deleteProduct);
 
 module.exports = route;
