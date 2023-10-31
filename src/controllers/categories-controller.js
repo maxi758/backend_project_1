@@ -24,9 +24,9 @@ const getCategories = async (req, res, next) => {
 
 const getCategoryById = async (req, res, next) => {
   let category;
-  const { pid } = req.params;
+  const { cid } = req.params;
   try {
-    category = await Category.findById(pid).exec();
+    category = await Category.findById(cid).exec();
   } catch (err) {
     const error = new HttpError("Fetch failed", 500);
     return next(error);
@@ -56,13 +56,13 @@ const createCategory = async (req, res, next) => {
 };
 
 const updateCategory = async (req, res, next) => {
-  const { pid } = req.params;
+  const { cid } = req.params;
   const propertiesToUpdate = req.body;
   let updatedCategory;
   console.log(propertiesToUpdate);
   try {
     updatedCategory = await Category.findByIdAndUpdate(
-      pid,
+      cid,
       propertiesToUpdate,
       { new: true }
     );
@@ -74,15 +74,15 @@ const updateCategory = async (req, res, next) => {
     const error = new HttpError("Category with given id was not found", 404);
     return next(error);
   }
-  //const updatedCategory = await Category.findOneAndUpdate({_id: pid}, propertiesToUpdate, {new: true});
+  //const updatedCategory = await Category.findOneAndUpdate({_id: cid}, propertiesToUpdate, {new: true});
   res.status(200).json({ updatedCategory });
 };
 
 const deleteCategory = async (req, res, next) => {
-  const { pid } = req.params;
+  const { cid } = req.params;
   let deletedCategory;
   try {
-    deletedCategory = await Category.findByIdAndDelete(pid);
+    deletedCategory = await Category.findByIdAndDelete(cid);
   } catch (err) {
     const error = new HttpError("Update failed", 500);
     return next(error);
