@@ -1,4 +1,5 @@
 const HttpError = require("../models/http-error");
+const { validationResult } = require("express-validator");
 const Order = require("../models/order");
 const Product = require("../models/product");
 
@@ -37,6 +38,15 @@ const getOrderById = async (req, res, next) => {
 };
 
 const createOrder = async (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    const error = new HttpError(
+      "Invalid inputs passed, please check your data.",
+      422
+    );
+    return next(error);
+  }
+
   let order = new Order();
   try {
     const result = order.save();
@@ -83,6 +93,14 @@ const addProduct = async (req, res, next) => {
 };
 
 const updateOrderProducts = async (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    const error = new HttpError(
+      "Invalid inputs passed, please check your data.",
+      422
+    );
+    return next(error);
+  }
   const { oid } = req.params;
   const { products } = req.body;
   let order, result;
@@ -102,6 +120,10 @@ const updateOrderProducts = async (req, res, next) => {
   const difference = products.filter(
     (product) => !arrayObjectId.includes(product)
   );
+  if (difference.length === 0) {
+    const error = new HttpError("Error: given id were already added to the order", 404);
+    return next(error);
+  }
   try {
     result = await Product.find({ _id: { $in: difference } });
   } catch (err) {
@@ -151,7 +173,9 @@ const removeProduct = async (req, res, next) => {
   }
 
   try {
-    order.products = order.products.filter((product) => product.toString() !== pid);
+    order.products = order.products.filter(
+      (product) => product.toString() !== pid
+    );
     result = await order.save();
   } catch (err) {
     const error = new HttpError("Could not add the product to the order", 500);
