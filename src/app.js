@@ -5,6 +5,7 @@ const dotenv = require("dotenv");
 const HttpError = require("./models/http-error");
 const categoriesRoutes = require("./routes/categories-routes");
 const productsRoutes = require('./routes/products-routes');
+const ordersRoutes = require("./routes/orders-routes");
 
 dotenv.config();
 
@@ -15,6 +16,8 @@ app.use(express.json());
 app.use("/api/categories", categoriesRoutes);
 
 app.use('/api/products', productsRoutes);
+
+app.use('/api/orders', ordersRoutes);
 
 app.use((req, res, next) => {
   const error = new HttpError("Could not find this route", 404);

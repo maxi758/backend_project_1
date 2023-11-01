@@ -16,7 +16,9 @@ const route = express.Router();
 route.get("/", getOrders);
 route.get("/:oid", getOrderById);
 route.post("/", createOrder);
-route.patch("/:oid/products/pid", addProduct);
+route.patch("/:oid/products/:pid", addProduct);
 route.patch("/:oid", updateOrderProducts);
-route.delete("/:oid/product/pid", removeProduct);
+route.delete("/:oid/products/:pid", removeProduct);
 route.delete("/:oid", deleteOrder);
+
+module.exports = route;
