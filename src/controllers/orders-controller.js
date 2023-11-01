@@ -24,7 +24,7 @@ const getOrderById = async (req, res, next) => {
   const { oid } = req.params;
   let order;
   try {
-    order = await Order.findById(oid);
+    order = await Order.findById(oid).populate("products");
   } catch (err) {
     const error = new HttpError("Fetch failed", 500);
     return next(error);
