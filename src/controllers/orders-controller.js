@@ -24,11 +24,12 @@ const getOrders = async (req, res, next) => {
 
 const getOrderById = async (req, res, next) => {
   const { oid } = req.params;
-  let order, count=0, sum=0;
+  let order,
+    count = 0,
+    sum = 0;
   try {
     order = await Order.findById(oid).populate("products");
     count = await Order.countDocuments({ _id: oid });
-
   } catch (err) {
     const error = new HttpError("Fetch failed", 500);
     return next(error);
@@ -39,18 +40,38 @@ const getOrderById = async (req, res, next) => {
     return next(error);
   }
   sum = order.products.reduce((acc, product) => acc + product.price, 0); //Suma de los precios de los productos, acc es el acumulador y empieza desde 0
-  res.status(200).json({ order: order.toObject({ getters: true }), count, totalToPay: sum });
+  res
+    .status(200)
+    .json({ order: order.toObject({ getters: true }), count, totalToPay: sum });
 };
 
 const createOrder = async (req, res, next) => {
+  const { products } = req.body;
   let order = new Order();
+  let orderCreated;
+  if (products && products.length !== 0) {
+    try {
+      const result = await Product.find({ _id: { $in: products } }); //verfico  que existan los productos
+      if (result.length !== products.length) {
+        // si no son iguales es porque no existen todos los productos, entonces no se crea la orden
+        const error = new HttpError("Fetch failed: id not found", 404);
+        return next(error);
+      }
+      order.products = products; // agrego los productos a la orden
+    } catch (err) {
+      const error = new HttpError("Fetch failed", 500);
+      return next(error);
+    }
+  }
+
   try {
-    const result = order.save();
+    orderCreated = await order.save(); // creo la orden en la base de datos
   } catch (err) {
     const error = new HttpError("Creation failed", 500);
     return next(error);
   }
-  res.status(201).json({ order });
+  orderCreated = await orderCreated.populate("products"); // obtengo los productos de la orden
+  res.status(201).json({ order: orderCreated });
 };
 
 const addProduct = async (req, res, next) => {
@@ -127,7 +148,10 @@ const updateOrderProducts = async (req, res, next) => {
 
   console.log(result);
   if (result.length !== difference.length) {
-    const error = new HttpError("Error: one of the id does not match with a existing product", 404);
+    const error = new HttpError(
+      "Error: one of the id does not match with a existing product",
+      404
+    );
     return next(error);
   }
   order.products.push(difference);
