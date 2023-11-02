@@ -3,9 +3,12 @@ const HttpError = require("../models/http-error");
 const Category = require("../models/category");
 
 const getCategories = async (req, res, next) => {
+  const { page = 1, limit = 10 } = req.query;
   let categories;
   try {
-    categories = await Category.find();
+    categories = await Category.find()
+      .limit(limit * 1)
+      .skip((page - 1) * limit);
   } catch (err) {
     const error = new HttpError("Fetch failed", 500);
     return next(error);
@@ -35,7 +38,7 @@ const getCategoryById = async (req, res, next) => {
     const error = new HttpError("Category with given id was not found", 404);
     return next(error);
   }
-	console.log(category);
+  console.log(category);
   res.status(200).json({ category: category.toObject({ getters: true }) });
 };
 
@@ -96,7 +99,7 @@ const deleteCategory = async (req, res, next) => {
 
 module.exports = {
   getCategories,
-	getCategoryById,
+  getCategoryById,
   createCategory,
   updateCategory,
   deleteCategory,
