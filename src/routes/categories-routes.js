@@ -7,16 +7,14 @@ const {
   updateCategory,
   deleteCategory,
 } = require("../controllers/categories-controller");
-const { validate } = require("../utils/validator");
+const { validate, paginateValidator } = require("../utils/validator");
 
 const router = express.Router();
 
 router.get(
   "/",
   [
-    query("page").optional().isInt().escape(),
-    query("limit").optional().isInt().escape(),
-    validate,
+    paginateValidator
   ],
   getCategories
 );

@@ -1,6 +1,6 @@
 const express = require("express");
 const { check, body, query, oneOf } = require("express-validator");
-const { validate } = require("../utils/validator");
+const { validate, paginateValidator } = require("../utils/validator");
 const {
   getProducts,
   getProductById,
@@ -15,9 +15,7 @@ const route = express.Router();
 route.get(
   "/",
   [
-    query("page").optional().isInt().escape(),
-    query("limit").optional().isInt().escape(),
-    validate,
+    paginateValidator
   ],
   getProducts
 );
