@@ -116,7 +116,7 @@ const updateOrderProducts = async (req, res, next) => {
     return next(error);
   }
   try {
-    result = await Product.find({ _id: { $in: difference } });
+    result = await Product.find({ _id: { $in: difference } }); // busca por los productos que estan en el array difference
   } catch (err) {
     const error = new HttpError(
       "Fetch failed: id does not have the correct format",
@@ -125,8 +125,9 @@ const updateOrderProducts = async (req, res, next) => {
     return next(error);
   }
 
-  if (result.length !== products.length) {
-    const error = new HttpError("Error: one of the id are invalid", 404);
+  console.log(result);
+  if (result.length !== difference.length) {
+    const error = new HttpError("Error: one of the id does not match with a existing product", 404);
     return next(error);
   }
   order.products.push(difference);
