@@ -12,16 +12,20 @@ const { validate } = require("../utils/validator");
 const router = express.Router();
 
 router.get("/", getCategories);
-router.get("/:cid", getCategoryById);
-router.post("/", 
+router.get("/:cid", [check("cid").isMongoId(), validate], getCategoryById);
+router.post(
+  "/",
   [
     check("name").trim().not().isEmpty(),
     check("description").isLength({ min: 5 }),
-    validate
+    validate,
   ],
-createCategory);
-router.patch("/:cid",
+  createCategory
+);
+router.patch(
+  "/:cid",
   [
+    check("cid").isMongoId(),
     check("name").trim().not().isEmpty().optional(),
     check("description").isLength({ min: 5 }).optional(),
     body().custom((value, { req }) => {
@@ -30,9 +34,10 @@ router.patch("/:cid",
       }
       return true;
     }),
-    validate    
+    validate,
   ],
- updateCategory);
-router.delete("/:cid", deleteCategory);
+  updateCategory
+);
+router.delete("/:cid", [check("cid").isMongoId(), validate], deleteCategory);
 
 module.exports = router;
