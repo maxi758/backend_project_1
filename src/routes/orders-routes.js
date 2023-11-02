@@ -11,16 +11,14 @@ const {
   removeOrderProduct,
   deleteOrder,
 } = require("../controllers/orders-controller");
-const { validate } = require("../utils/validator");
+const { validate, paginateValidator } = require("../utils/validator");
 
 const route = express.Router();
 
 route.get(
   "/",
   [
-    query("page").optional().isInt().escape(),
-    query("limit").optional().isInt().escape(),
-    validate
+    paginateValidator
   ],
   getOrders
 );
