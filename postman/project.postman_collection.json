@@ -182,8 +182,9 @@
 				{
 					"name": "addProduct",
 					"request": {
-						"method": "GET",
-						"header": []
+						"method": "PATCH",
+						"header": [],
+						"url": "localhost:5000/api/orders/6541e2ae81e72a6dceb0b807/products/65411671e14bc383383ee10d"
 					},
 					"response": []
 				},
