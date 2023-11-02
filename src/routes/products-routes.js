@@ -14,9 +14,13 @@ const route = express.Router();
 
 route.get("/", getProducts);
 
-route.get("/:pid", getProductById);
+route.get("/:pid", [check("pid").isMongoId(), validate], getProductById);
 
-route.get("/categories/:cid", getProductsByCategory);
+route.get(
+  "/categories/:cid",
+  [check("pid").isMongoId(), validate],
+  getProductsByCategory
+);
 
 route.post(
   "/",
@@ -35,6 +39,7 @@ route.post(
 route.patch(
   "/:pid",
   [
+    check("pid").isMongoId(),
     oneOf([
       check("name").trim().not().isEmpty(),
       check("description").isLength({ min: 5 }),
@@ -54,6 +59,6 @@ route.patch(
   updateProduct
 );
 
-route.delete("/:pid", deleteProduct);
+route.delete("/:pid", [check("pid").isMongoId(), validate], deleteProduct);
 
 module.exports = route;
