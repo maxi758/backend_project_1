@@ -3,9 +3,12 @@ const HttpError = require("../models/http-error");
 const Product = require("../models/product");
 
 const getProducts = async (req, res, next) => {
+  const { page = 1, limit = 10 } = req.query;
   let products;
   try {
-    products = await Product.find();
+    products = await Product.find()
+      .limit(limit * 1)
+      .skip((page - 1) * limit);
   } catch (err) {
     const error = new HttpError("Fetch failed", 500);
     return next(error);
@@ -23,7 +26,7 @@ const getProductById = async (req, res, next) => {
   let product;
   const { pid } = req.params;
   try {
-    product = await Product.findById(pid).populate('category');
+    product = await Product.findById(pid).populate("category");
   } catch (err) {
     const error = new HttpError("Fetch failed", 500);
     return next(error);
@@ -54,24 +57,22 @@ const getProductsByCategory = async (req, res, next) => {
     );
     return next(error);
   }
-  res
-    .status(200)
-    .json({
-      products: products.map((product) => product.toObject({ getters: true })),
-    });
+  res.status(200).json({
+    products: products.map((product) => product.toObject({ getters: true })),
+  });
 };
 
 const createProduct = async (req, res, next) => {
-  const {name, description, price, stock, image} = req.body;
+  const { name, description, price, stock, image } = req.body;
   let result;
   const product = new Product({
     name,
     description,
     price,
     stock,
-    image
+    image,
   });
-  if (req.body.category){
+  if (req.body.category) {
     product.category = req.body.category;
   }
   try {
@@ -80,15 +81,17 @@ const createProduct = async (req, res, next) => {
     const error = new HttpError("Creation failed", 500);
     return next(error);
   }
-  res.status(201).json({product});
-}
+  res.status(201).json({ product });
+};
 
 const updateProduct = async (req, res, next) => {
-  const {pid} = req.params;
+  const { pid } = req.params;
   const propertiesToUpdate = req.body;
   let product;
   try {
-    product = await Product.findByIdAndUpdate(pid, propertiesToUpdate, {new: true});
+    product = await Product.findByIdAndUpdate(pid, propertiesToUpdate, {
+      new: true,
+    });
   } catch (err) {
     const error = new HttpError("Update failed", 500);
     return next(error);
@@ -100,8 +103,8 @@ const updateProduct = async (req, res, next) => {
     );
     return next(error);
   }
-  res.status(200).json({product});
-}
+  res.status(200).json({ product });
+};
 
 const deleteProduct = async (req, res, next) => {
   const { pid } = req.params;
@@ -125,5 +128,5 @@ module.exports = {
   getProductsByCategory,
   createProduct,
   updateProduct,
-  deleteProduct
+  deleteProduct,
 };

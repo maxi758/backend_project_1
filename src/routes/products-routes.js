@@ -12,7 +12,15 @@ const {
 
 const route = express.Router();
 
-route.get("/", getProducts);
+route.get(
+  "/",
+  [
+    query("page").optional().isInt().escape(),
+    query("limit").optional().isInt().escape(),
+    validate,
+  ],
+  getProducts
+);
 
 route.get("/:pid", [check("pid").isMongoId(), validate], getProductById);
 
