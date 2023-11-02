@@ -3,7 +3,6 @@ const Order = require("../models/order");
 const Product = require("../models/product");
 
 const getOrders = async (req, res, next) => {
-
   const { page = 1, limit = 10 } = req.query;
   let orders;
   try {
@@ -41,7 +40,6 @@ const getOrderById = async (req, res, next) => {
 };
 
 const createOrder = async (req, res, next) => {
-
   let order = new Order();
   try {
     const result = order.save();
@@ -88,7 +86,6 @@ const addProduct = async (req, res, next) => {
 };
 
 const updateOrderProducts = async (req, res, next) => {
-  
   const { oid } = req.params;
   const { products } = req.body;
   let order, result;
@@ -194,14 +191,18 @@ const removeOrderProducts = async (req, res, next) => {
 
 const deleteOrder = async (req, res, next) => {
   const { oid } = req.params;
-  let result;
+  let orderDeleted;
   try {
-    result = await Order.findByIdAndDelete(oid);
+    orderDeleted = await Order.findByIdAndDelete(oid);
   } catch (err) {
     const error = new HttpError("Delete failed", 500);
     return next(error);
   }
-  res.status(200).json({ result });
+  if (!orderDeleted) {
+    const error = new HttpError("Could not find a order for the given id", 404);
+    return next(error);
+  }
+  res.status(200).json({ orderDeleted });
 };
 
 module.exports = {
