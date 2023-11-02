@@ -1,12 +1,15 @@
 const HttpError = require("../models/http-error");
-const { validationResult } = require("express-validator");
 const Order = require("../models/order");
 const Product = require("../models/product");
 
 const getOrders = async (req, res, next) => {
+
+  const { page = 1, limit = 10 } = req.query;
   let orders;
   try {
-    orders = await Order.find();
+    orders = await Order.find()
+      .limit(limit * 1)
+      .skip((page - 1) * limit);
   } catch (err) {
     const error = new HttpError("Fetch failed", 500);
     return next(error);
@@ -38,14 +41,6 @@ const getOrderById = async (req, res, next) => {
 };
 
 const createOrder = async (req, res, next) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    const error = new HttpError(
-      "Invalid inputs passed, please check your data.",
-      422
-    );
-    return next(error);
-  }
 
   let order = new Order();
   try {
@@ -93,14 +88,7 @@ const addProduct = async (req, res, next) => {
 };
 
 const updateOrderProducts = async (req, res, next) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    const error = new HttpError(
-      "Invalid inputs passed, please check your data.",
-      422
-    );
-    return next(error);
-  }
+  
   const { oid } = req.params;
   const { products } = req.body;
   let order, result;
@@ -121,7 +109,10 @@ const updateOrderProducts = async (req, res, next) => {
     (product) => !arrayObjectId.includes(product)
   );
   if (difference.length === 0) {
-    const error = new HttpError("Error: given id were already added to the order", 404);
+    const error = new HttpError(
+      "Error: given id were already added to the order",
+      404
+    );
     return next(error);
   }
   try {
