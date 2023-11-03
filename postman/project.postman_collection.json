@@ -10,11 +10,31 @@
 			"name": "categories",
 			"item": [
 				{
-					"name": "getAll",
+					"name": "getCategories",
 					"request": {
 						"method": "GET",
 						"header": [],
-						"url": "localhost:5000/"
+						"url": {
+							"raw": "localhost:5000/api/categories?page=1&limit=2",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"categories"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "2"
+								}
+							]
+						}
 					},
 					"response": []
 				},
@@ -25,7 +45,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"name\": \"home\",\r\n    \"description\": \"home articles\"\r\n}",
+							"raw": "{\r\n    \"name\": \"electrics\",\r\n    \"description\": \"works with electricity\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -43,7 +63,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"name\": \"home updated 5\"\r\n}",
+							"raw": "{\r\n    \"name\": \"home updated 3\"\r\n\r\n\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -68,7 +88,7 @@
 					"request": {
 						"method": "GET",
 						"header": [],
-						"url": "localhost:5000/api/categories/653fce2ab9623b8666f23a15"
+						"url": "localhost:5000/api/categories/6540f8b2e8b3de9f64326620"
 					},
 					"response": []
 				}
@@ -82,7 +102,27 @@
 					"request": {
 						"method": "GET",
 						"header": [],
-						"url": "localhost:5000/api/products"
+						"url": {
+							"raw": "localhost:5000/api/products?page=1&limit=15",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"products"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "15"
+								}
+							]
+						}
 					},
 					"response": []
 				},
@@ -102,7 +142,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"name\": \"mini pinner\",\r\n    \"description\": \"blablabla\",\r\n    \"price\": 200,\r\n    \"stock\": 50,\r\n    \"image\": \"image.com\",\r\n    \"category\": \"6540f92c7fe954c79809c82b\"\r\n}",
+							"raw": "{\r\n    \"name\": \"modem\",\r\n    \"description\": \"blablabla\",\r\n    \"price\": 200,\r\n    \"stock\": 50,\r\n    \"image\": \"image.com\",\r\n    \"category\": \"6540f92c7fe954c79809c82b\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -117,7 +157,8 @@
 					"name": "getProductByCategory",
 					"request": {
 						"method": "GET",
-						"header": []
+						"header": [],
+						"url": "localhost:5000/api/products/categories/6540f92c7fe954c79809c82b"
 					},
 					"response": []
 				},
@@ -128,7 +169,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"name\": \"mixer with bowl\"\r\n}",
+							"raw": "{\r\n    \"name\": \"mixer with bowl2\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -157,7 +198,28 @@
 					"name": "getOrders",
 					"request": {
 						"method": "GET",
-						"header": []
+						"header": [],
+						"url": {
+							"raw": "localhost:5000/api/orders?page=1&limit=5",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"orders"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "5"
+								}
+							]
+						}
 					},
 					"response": []
 				},
@@ -166,6 +228,15 @@
 					"request": {
 						"method": "POST",
 						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
 						"url": "localhost:5000/api/orders"
 					},
 					"response": []
@@ -195,14 +266,14 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"products\": [\r\n        \"555445\"\r\n    ]\r\n}",
+							"raw": "{\r\n    \"products\": [\r\n        \"6543a3d3ea2a0f576476b3f7\",\r\n        \"6543a58b88ef55d9ef037ddd\",\r\n        \"6543a33c490a0ab915f91fe8\",\r\n        \"6543448e710ba6856918e8b1\"\r\n    ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
 								}
 							}
 						},
-						"url": "localhost:5000/api/orders/6541e2ae81e72a6dceb0b807"
+						"url": "localhost:5000/api/orders/6542a4f9aa61078dbc51188a"
 					},
 					"response": []
 				},
@@ -221,6 +292,24 @@
 						"method": "DELETE",
 						"header": [],
 						"url": "localhost:5000/api/orders/6541fba58704eed160c650bb"
+					},
+					"response": []
+				},
+				{
+					"name": "deleteProductList",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "localhost:5000/api/orders/654275fad126dc545c213e28/products"
 					},
 					"response": []
 				}
