@@ -45,25 +45,9 @@ const getOrderById = async (req, res, next) => {
     .json({ order: order.toObject({ getters: true }), count, totalToPay: sum });
 };
 
-const createOrder = async (req, res, next) => {
-  const { products } = req.body;
-  let order = new Order();
+const createEmptyOrder = async (req, res, next) => {
   let orderCreated;
-  if (products && products.length !== 0) {
-    try {
-      const result = await Product.find({ _id: { $in: products } }); //verfico  que existan los productos
-      if (result.length !== products.length) {
-        // si no son iguales es porque no existen todos los productos, entonces no se crea la orden
-        const error = new HttpError("Fetch failed: id not found", 404);
-        return next(error);
-      }
-      order.products = products; // agrego los productos a la orden
-    } catch (err) {
-      const error = new HttpError("Fetch failed", 500);
-      return next(error);
-    }
-  }
-
+  let order = new Order();
   try {
     orderCreated = await order.save(); // creo la orden en la base de datos
   } catch (err) {
@@ -236,7 +220,7 @@ const deleteOrder = async (req, res, next) => {
 module.exports = {
   getOrders,
   getOrderById,
-  createOrder,
+  createEmptyOrder,
   addProduct,
   updateOrderProducts,
   removeProduct,
