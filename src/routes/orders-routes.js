@@ -58,7 +58,7 @@ route.post(
   [check("products").isArray({ min: 1, max: 200 }).isMongoId(), validate],
   createOrder
 );
-
+//vacía la orden de productos
 route.delete(
   "/:oid/products/",
   [check("oid").isMongoId(), validate],
