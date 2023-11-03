@@ -66,11 +66,11 @@ const createOrder = async (req, res, next) => {
 
   try {
     orderCreated = await order.save(); // creo la orden en la base de datos
+    orderCreated = await orderCreated.populate("products"); // obtengo los productos de la orden
   } catch (err) {
     const error = new HttpError("Creation failed", 500);
     return next(error);
   }
-  orderCreated = await orderCreated.populate("products"); // obtengo los productos de la orden
   res.status(201).json({ order: orderCreated });
 };
 
