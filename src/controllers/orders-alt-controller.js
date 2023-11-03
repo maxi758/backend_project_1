@@ -79,7 +79,7 @@ const removeOrderProducts = async (req, res, next) => {
   const { oid } = req.params;
   let order;
   try {
-    order = Order.findByIdAndUpdate(oid, { products: [] }, { new: true });
+    order = await  Order.findByIdAndUpdate(oid, { products: [] }, { new: true });
   } catch (err) {
     const error = new HttpError("Delete failed", 500);
     return next(error);

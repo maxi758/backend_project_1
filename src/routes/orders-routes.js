@@ -60,8 +60,8 @@ route.post(
 );
 
 route.delete(
-  "/:oid/products/:pid",
-  [check(["oid", "pid"]).isMongoId(), validate],
+  "/:oid/products/",
+  [check("oid").isMongoId(), validate],
   removeOrderProducts
 );
 
