@@ -1,49 +1,7 @@
 const HttpError = require("../models/http-error");
 const Order = require("../models/order");
+const product = require("../models/product");
 const Product = require("../models/product");
-
-const getOrders = async (req, res, next) => {
-  const { page = 1, limit = 10 } = req.query;
-  let orders;
-  try {
-    orders = await Order.find()
-      .limit(limit * 1)
-      .skip((page - 1) * limit);
-  } catch (err) {
-    const error = new HttpError("Fetch failed", 500);
-    return next(error);
-  }
-  if (orders.length === 0) {
-    const error = new HttpError("No orders found", 404);
-    return next(error);
-  }
-  res
-    .status(200)
-    .json({ orders: orders.map((order) => order.toObject({ getters: true })) });
-};
-
-const getOrderById = async (req, res, next) => {
-  const { oid } = req.params;
-  let order,
-    count = 0,
-    sum = 0;
-  try {
-    order = await Order.findById(oid).populate("products");
-    count = await Order.countDocuments({ _id: oid });
-  } catch (err) {
-    const error = new HttpError("Fetch failed", 500);
-    return next(error);
-  }
-
-  if (!order) {
-    const error = new HttpError("Could not find a order for the given id", 404);
-    return next(error);
-  }
-  sum = order.products.reduce((acc, product) => acc + product.price, 0); //Suma de los precios de los productos, acc es el acumulador y empieza desde 0
-  res
-    .status(200)
-    .json({ order: order.toObject({ getters: true }), count, totalToPay: sum });
-};
 
 const createEmptyOrder = async (req, res, next) => {
   let orderCreated;
@@ -150,9 +108,8 @@ const updateOrderProducts = async (req, res, next) => {
 
 const removeProduct = async (req, res, next) => {
   const { pid, oid } = req.params;
-  let product, order, result;
+  let order, result, productFound;
   try {
-    product = await Product.findById(pid);
     order = await Order.findById(oid);
   } catch (err) {
     const error = new HttpError("Fetch failed", 500);
@@ -164,41 +121,24 @@ const removeProduct = async (req, res, next) => {
     return next(error);
   }
 
-  if (!product) {
-    const error = new HttpError(
-      "Could not find a product for the given id",
-      404
-    );
+  productFound = order.products.find(product => product.toString() === pid);
+  if (!productFound) {
+    const error = new HttpError("Could not find a product for the given id in the order", 404);
     return next(error);
   }
-
+  order.products = order.products.filter(
+    (product) => product.toString() !== pid
+  );
+  
   try {
-    order.products = order.products.filter(
-      (product) => product.toString() !== pid
-    );
     result = await order.save();
   } catch (err) {
-    const error = new HttpError("Could not add the product to the order", 500);
+    console.log(err);
+    const error = new HttpError("Could not remove the product from the order", 500);
     return next(error);
   }
 
   res.status(200).json({ order: result });
-};
-
-const removeOrderProducts = async (req, res, next) => {
-  const { oid } = req.params;
-  let order;
-  try {
-    order = Order.findByIdAndUpdate(oid, { products: [] }, { new: true });
-  } catch (err) {
-    const error = new HttpError("Delete failed", 500);
-    return next(error);
-  }
-  if (!order) {
-    const error = new HttpError("Could not find a order for the given id", 404);
-    return next(error);
-  }
-  res.status(200).json({ order });
 };
 
 const deleteOrder = async (req, res, next) => {
@@ -218,12 +158,9 @@ const deleteOrder = async (req, res, next) => {
 };
 
 module.exports = {
-  getOrders,
-  getOrderById,
   createEmptyOrder,
   addProduct,
   updateOrderProducts,
   removeProduct,
-  removeOrderProducts,
   deleteOrder,
 };
