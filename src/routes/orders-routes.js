@@ -26,7 +26,7 @@ route.get("/:oid", getOrderById);
 // i want to check to body is empty
 route.post(
   "/",[
-    check("products").isArray({ min: 1, max: 200 }).isMongoId().optional(),
+    check("products").isArray({ min: 1, max: 200 }).isMongoId(),
   validate],
   createOrder
 );
