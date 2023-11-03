@@ -11,17 +11,18 @@ const {
   removeOrderProduct,
   deleteOrder,
 } = require("../controllers/orders-controller");
+const {createOrder} = require("../controllers/orders-alt-controller");
 const { validate, paginateValidator } = require("../utils/validator");
 
 const route = express.Router();
 
 route.get("/", [paginateValidator], getOrders);
 route.get("/:oid", getOrderById);
-// i want to check to body is empty
+
 route.post(
   "/",
   [
-    body().custom((value, { req }) => {
+    body().custom((value, { req }) => { // verifico que el body este vacío (revisar si es necesario)
       if (Object.keys(req.body).length !== 0) {
         throw new Error("Request body is not empty");
       }
@@ -31,11 +32,19 @@ route.post(
   ],
   createEmptyOrder
 );
+
+route.post("/products",
+    [
+        check("products").isArray({ min: 1, max: 200 }).isMongoId(),
+        validate,
+    ],
+ createOrder);
+
 route.patch("/:oid/products/:pid", addProduct);
 route.patch(
   "/:oid",
   [
-    check("products").isArray({ min: 1, max: 200 }).isMongoId(), //i could use this validation to avoid using it in the controller
+    check("products").isArray({ min: 1, max: 200 }).isMongoId(), // verifico que el body tenga un array de productos con al menos un elemento
     validate,
   ],
   updateOrderProducts
