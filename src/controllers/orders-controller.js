@@ -166,9 +166,8 @@ const updateOrderProducts = async (req, res, next) => {
 
 const removeProduct = async (req, res, next) => {
   const { pid, oid } = req.params;
-  let product, order, result;
+  let order, result, productFound;
   try {
-    product = await Product.findById(pid);
     order = await Order.findById(oid);
   } catch (err) {
     const error = new HttpError("Fetch failed", 500);
@@ -180,21 +179,26 @@ const removeProduct = async (req, res, next) => {
     return next(error);
   }
 
-  if (!product) {
+  productFound = order.products.find((product) => product.toString() === pid);
+  if (!productFound) {
     const error = new HttpError(
-      "Could not find a product for the given id",
+      "Could not find a product for the given id in the order",
       404
     );
     return next(error);
   }
+  order.products = order.products.filter(
+    (product) => product.toString() !== pid
+  );
 
   try {
-    order.products = order.products.filter(
-      (product) => product.toString() !== pid
-    );
     result = await order.save();
   } catch (err) {
-    const error = new HttpError("Could not add the product to the order", 500);
+    console.log(err);
+    const error = new HttpError(
+      "Could not remove the product from the order",
+      500
+    );
     return next(error);
   }
 
