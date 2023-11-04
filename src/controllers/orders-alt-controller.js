@@ -28,8 +28,7 @@ const getOrderById = async (req, res, next) => {
     count = 0,
     sum = 0;
   try {
-    order = await Order.findById(oid).populate("products");
-    count = await Order.countDocuments({ _id: oid });
+    order = await Order.findById(oid).populate("products.product", "-products._id");
   } catch (err) {
     const error = new HttpError("Fetch failed", 500);
     return next(error);
@@ -39,10 +38,14 @@ const getOrderById = async (req, res, next) => {
     const error = new HttpError("Could not find a order for the given id", 404);
     return next(error);
   }
-  sum = order.products.reduce((acc, product) => acc + product.price, 0); //Suma de los precios de los productos, acc es el acumulador y empieza desde 0
+  //cantidad de productos en la orden
+  count = order.products.reduce((acc, product) => acc + product.qty, 0); //Suma de las cantidades de los productos, acc es el acumulador y empieza desde 0
+  sum = order.products.reduce((acc, product) => {
+    console.log(product);
+    return acc + product.product.price*product.qty}, 0); //Suma de los precios de los productos, acc es el acumulador y empieza desde 0
   res
     .status(200)
-    .json({ order: order.toObject({ getters: true }), count, totalToPay: sum });
+    .json({ order: order.toObject(), count, totalToPay: sum });
 };
 
 const createOrder = async (req, res, next) => {
