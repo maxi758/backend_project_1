@@ -1,10 +1,13 @@
 const HttpError = require("../models/http-error");
 const Order = require("../models/order");
 const Product = require("../models/product");
+const mongoose = require("mongoose");
 
 const createEmptyOrder = async (req, res, next) => {
   let orderCreated;
-  let order = new Order();
+  let order = new Order({
+    products: [],
+  });
   try {
     orderCreated = await order.save(); // creo la orden en la base de datos
     orderCreated = await orderCreated.populate("products"); // obtengo los productos de la orden
@@ -16,10 +19,13 @@ const createEmptyOrder = async (req, res, next) => {
 };
 
 const addProduct = async (req, res, next) => {
-  const { pid, oid } = req.params;
+  const { oid } = req.params;
+  const { products } = req.body;
   let product, order, result;
+
+  //product = products.map((product) => new mongoose.Types.ObjectId(product.product));
   try {
-    product = await Product.findById(pid);
+    product = await Product.find({ _id: { $in: products._id } });
     order = await Order.findById(oid);
   } catch (err) {
     const error = new HttpError("Fetch failed", 500);
@@ -38,9 +44,12 @@ const addProduct = async (req, res, next) => {
     );
     return next(error);
   }
+  products.forEach((product) => {
+    console.log(product);
+    order.products.push(product);
+  });
 
   try {
-    order.products.push(product);
     result = await order.save();
   } catch (err) {
     const error = new HttpError("Could not add the product to the order", 500);
