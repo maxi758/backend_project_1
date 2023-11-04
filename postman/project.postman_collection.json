@@ -39,6 +39,15 @@
 					"response": []
 				},
 				{
+					"name": "getCategoryById",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "localhost:5000/api/categories/6540f8b2e8b3de9f64326620"
+					},
+					"response": []
+				},
+				{
 					"name": "createCategory",
 					"request": {
 						"method": "POST",
@@ -80,15 +89,6 @@
 						"method": "DELETE",
 						"header": [],
 						"url": "localhost:5000/api/categories/653fce2ab9623b8666f23a15"
-					},
-					"response": []
-				},
-				{
-					"name": "getCategoryById",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": "localhost:5000/api/categories/6540f8b2e8b3de9f64326620"
 					},
 					"response": []
 				}
@@ -136,6 +136,15 @@
 					"response": []
 				},
 				{
+					"name": "getProductByCategory",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "localhost:5000/api/products/categories/6540f92c7fe954c79809c82b"
+					},
+					"response": []
+				},
+				{
 					"name": "createProduct",
 					"request": {
 						"method": "POST",
@@ -150,15 +159,6 @@
 							}
 						},
 						"url": "localhost:5000/api/products"
-					},
-					"response": []
-				},
-				{
-					"name": "getProductByCategory",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": "localhost:5000/api/products/categories/6540f92c7fe954c79809c82b"
 					},
 					"response": []
 				},
@@ -224,7 +224,34 @@
 					"response": []
 				},
 				{
+					"name": "getOrderById",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "localhost:5000/api/orders/6541e2ae81e72a6dceb0b807"
+					},
+					"response": []
+				},
+				{
 					"name": "createOrder",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"products\":[\"65411671e14bc383383ee10d\"]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "localhost:5000/api/orders/products"
+					},
+					"response": []
+				},
+				{
+					"name": "createEmptyOrder",
 					"request": {
 						"method": "POST",
 						"header": [],
@@ -238,15 +265,6 @@
 							}
 						},
 						"url": "localhost:5000/api/orders"
-					},
-					"response": []
-				},
-				{
-					"name": "getOrderById",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": "localhost:5000/api/orders/6541e2ae81e72a6dceb0b807"
 					},
 					"response": []
 				},
