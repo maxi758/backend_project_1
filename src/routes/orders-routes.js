@@ -33,7 +33,11 @@ route.post(
   createEmptyOrder
 );
 
-route.patch("/:oid/products/:pid", [check(["oid", "pid"]).isMongoId(), validate], addProduct);
+route.patch(
+  "/:oid/products/:pid",
+  [check(["oid", "pid"]).isMongoId(), validate],
+  addProduct
+);
 route.patch(
   "/:oid",
   [
@@ -43,7 +47,11 @@ route.patch(
   ],
   updateOrderProducts
 );
-route.delete("/:oid/products/:pid", [check(["oid", "pid"]).isMongoId(), validate], removeProduct);
+route.delete(
+  "/:oid/products/:pid",
+  [check(["oid", "pid"]).isMongoId(), validate],
+  removeProduct
+);
 
 route.delete("/:oid", [check("oid").isMongoId(), validate], deleteOrder);
 
@@ -55,7 +63,12 @@ route.get("/:oid", [check("oid").isMongoId(), validate], getOrderById);
 
 route.post(
   "/products",
-  [check("products").isArray({ min: 1, max: 200 }).isMongoId(), validate],
+  [
+    check("products").isArray({ min: 1, max: 200 }),
+    check("products.*.product").isMongoId(),
+    check("products.*.qty").isInt({ min: 1, max: 100 }).optional(),
+    validate,
+  ],
   createOrder
 );
 //vacía la orden de productos
