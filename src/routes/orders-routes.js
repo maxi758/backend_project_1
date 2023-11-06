@@ -47,11 +47,11 @@ route.patch(
 );
 route.patch(
   "/:oid",
-  [
-    check("products").isArray({ min: 1, max: 200 }).isMongoId(), // verifico que el body tenga un array de productos con al menos un elemento
-    check("oid").isMongoId(),
-    validate,
-  ],
+  check(["oid"]).isMongoId(),
+    check("products").isArray({ min: 1, max: 200 }),
+    check("products.*").isObject(),
+    check("products.*.product").isMongoId(),
+    check("products.*.qty").isInt({ min: 1, max: 100 }),
   updateOrderProducts
 );
 route.delete(

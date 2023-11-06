@@ -1,7 +1,6 @@
 const HttpError = require("../models/http-error");
 const Order = require("../models/order");
 const Product = require("../models/product");
-const mongoose = require("mongoose");
 
 const createEmptyOrder = async (req, res, next) => {
   let orderCreated;
@@ -44,10 +43,10 @@ const addProduct = async (req, res, next) => {
     return next(error);
   }
 
-  foundProducts = order.products.filter(
-    (product) => products.filter((x) => x.product === product)
+  foundProducts = order.products.filter((product) =>
+    products.filter((x) => x.product === product)
   );
- 
+
   products.forEach((product) => {
     const found = order.products.find(
       (x) => x.product.toString() === product.product
@@ -72,7 +71,7 @@ const addProduct = async (req, res, next) => {
 const updateOrderProducts = async (req, res, next) => {
   const { oid } = req.params;
   const { products } = req.body;
-  let order, result;
+  let order, existingProducts, incomingProducts, result;
   try {
     order = await Order.findById(oid);
   } catch (err) {
@@ -84,20 +83,33 @@ const updateOrderProducts = async (req, res, next) => {
     return next(error);
   }
 
-  const arrayObjectId = order.products.map((x) => x.toString()); //Para no saturar el filter con tantas funciones
+  const filteredProducts = products.reduce((acc, product) => {
+    if (!acc.some((x) => x.product === product.product)) {
+      acc.push(product);
+    }
+    return acc;
+  }, []);
+  // eliminar productos de products cuyo product este repetido
 
-  const difference = products.filter(
-    (product) => !arrayObjectId.includes(product)
+  const arrayObjectId = order.products.map((x) => x.product.toString()); //Para no saturar el filter con tantas funciones
+
+  const difference = filteredProducts.filter(
+    (product) => !arrayObjectId.includes(product.product)
   );
-  if (difference.length === 0) {
-    const error = new HttpError(
-      "Error: given id were already added to the order",
-      404
-    );
-    return next(error);
-  }
+
+  const existing = filteredProducts.filter((product) =>
+    arrayObjectId.includes(product.product)
+  );
+  const incomingProductsIds = difference.map((product) => product.product);
+  const existingProductsIds = existing.map((product) => product.product);
+
   try {
-    result = await Product.find({ _id: { $in: difference } }); // busca por los productos que estan en el array difference
+    existingProducts = await Product.find({
+      _id: { $in: existingProductsIds },
+    }); // busca por los productos que estan en la orden
+    incomingProducts = await Product.find({
+      _id: { $in: incomingProductsIds },
+    }); // busca por los productos que no estaban en la orden
   } catch (err) {
     const error = new HttpError(
       "Fetch failed: id does not have the correct format",
@@ -106,15 +118,26 @@ const updateOrderProducts = async (req, res, next) => {
     return next(error);
   }
 
-  console.log(result);
-  if (result.length !== difference.length) {
+  if (
+    filteredProducts.length !==
+    existingProducts.length + incomingProducts.length
+  ) {
     const error = new HttpError(
       "Error: one of the id does not match with a existing product",
       404
     );
     return next(error);
   }
-  order.products.push(difference);
+
+  order.products.push(...difference);
+
+  existing.forEach((product) => {
+    const found = order.products.find(
+      (x) => x.product.toString() === product.product
+    );
+    found.qty = product.qty || found.qty;
+  });
+
   try {
     await order.save();
   } catch (err) {
@@ -139,7 +162,7 @@ const removeProduct = async (req, res, next) => {
     return next(error);
   }
 
-  productFound = order.products.find((product) => product.toString() === pid);
+  productFound = order.products.find((product) => product.product.toString() === pid);
   if (!productFound) {
     const error = new HttpError(
       "Could not find a product for the given id in the order",
@@ -148,7 +171,7 @@ const removeProduct = async (req, res, next) => {
     return next(error);
   }
   order.products = order.products.filter(
-    (product) => product.toString() !== pid
+    (product) => product.product.toString() !== pid
   );
 
   try {
