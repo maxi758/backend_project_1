@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const Product = require("./product");
+const HttpError = require("./http-error");
 const schema = mongoose.Schema;
 
 const categorySchema = new schema({
@@ -17,11 +18,14 @@ categorySchema.pre("findOneAndUpdate", function (next) {
   next();
 });
 
-
-categorySchema.pre("findOneAndDelete", async function (next) {
-
-  const doc = await this.model.findOne(this.getFilter());
-  await Product.updateMany({ category: doc._id }, { category: null });
+categorySchema.pre("findByIdAndDelete", async function (next) {
+  try {
+    const doc = await this.model.findOne(this.getFilter());
+    await Product.updateMany({ category: doc._id }, { category: null });
+  } catch (error) {
+    const err = new HttpError("Delete failed", 500);
+    return next(err);
+  }
   next();
 });
 
