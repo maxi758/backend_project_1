@@ -89,17 +89,17 @@ Devuelve una orden en particular.
 
 Crea una nueva orden vacía. No recibe elementos en el body.
 
-### POST /orders//products
+### POST /orders/products
 
-Crea una nueva orden con productos. Recibe un array con los ids de los productos.
+Crea una nueva orden con productos. Recibe un array con los ids de los productos y la cantidad de cada uno.
 
-### PATCH /orders/:id
+### PATCH /orders/:id/products
 
-Actualiza una orden existente. Recibe un array con los ids de los productos. Solo guarda los nuevos elementos, enviar todos los productos que se quieran guardar.
+Recibe un array con los ids de los productos y la cantidad de cada uno. Si es nuevo, lo agrega. Si ya existe, actualiza la cantidad.
 
-### PATCH /orders/:id/products/:id
+### PATCH /orders/:id/
 
-Agrega un producto a una orden existente.
+Actualiza una orden existente. Recibe un array con los ids de los productos y la cantidad de cada uno. 
 
 ### DELETE /orders/:id
 
