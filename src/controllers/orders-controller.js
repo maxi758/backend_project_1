@@ -20,7 +20,7 @@ const createEmptyOrder = async (req, res, next) => {
 const addProduct = async (req, res, next) => {
   const { oid } = req.params;
   const { products } = req.body;
-  let product, order, result;
+  let product, order, result, foundProducts;
 
   //product = products.map((product) => new mongoose.Types.ObjectId(product.product));
   try {
@@ -43,9 +43,20 @@ const addProduct = async (req, res, next) => {
     );
     return next(error);
   }
+
+  foundProducts = order.products.filter(
+    (product) => products.filter((x) => x.product === product)
+  );
+ 
   products.forEach((product) => {
-    console.log(product);
-    order.products.push(product);
+    const found = order.products.find(
+      (x) => x.product.toString() === product.product
+    );
+    if (!found) {
+      order.products.push(product);
+    } else {
+      found.qty = found.qty + (product.qty || 1);
+    }
   });
 
   try {
@@ -139,7 +150,7 @@ const removeProduct = async (req, res, next) => {
   order.products = order.products.filter(
     (product) => product.toString() !== pid
   );
-  
+
   try {
     result = await order.save();
   } catch (err) {

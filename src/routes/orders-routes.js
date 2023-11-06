@@ -34,8 +34,15 @@ route.post(
 );
 
 route.patch(
-  "/:oid/products/:pid",
-  [check(["oid", "pid"]).isMongoId(), validate],
+  "/:oid/products/",
+  [
+    check(["oid"]).isMongoId(),
+    check("products").isArray({ min: 1, max: 200 }),
+    check("products.*").isObject(),
+    check("products.*.product").isMongoId(),
+    check("products.*.qty").isInt({ min: 1, max: 100 }).optional(),
+    validate,
+  ],
   addProduct
 );
 route.patch(
@@ -65,7 +72,7 @@ route.post(
   "/products",
   [
     check("products").isArray({ min: 1, max: 200 }),
-    check('products.*').isObject(),
+    check("products.*").isObject(),
     check("products.*.product").isMongoId(),
     check("products.*.qty").isInt({ min: 1, max: 100 }).optional(),
     validate,
