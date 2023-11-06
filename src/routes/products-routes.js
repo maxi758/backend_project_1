@@ -24,7 +24,7 @@ route.get("/:pid", [check("pid").isMongoId(), validate], getProductById);
 
 route.get(
   "/categories/:cid",
-  [check("pid").isMongoId(), validate],
+  [check("cid").isMongoId(), validate],
   getProductsByCategory
 );
 
